@@ -86,7 +86,7 @@ $(".deck").click(function(e){
                         secondCard=undefined;
                         $(".moves").text(moves);
                         matches++;
-                        (matches===8) ? alert("YOU WIN"),:"";
+                        (matches===8) ? alert("YOU WIN"):"";
                     }
                     else {
                         setTimeout(fadeAway, 500);
