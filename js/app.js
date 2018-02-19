@@ -1,7 +1,24 @@
 //Javascript for Jeff Choate's matching game project for Udacity course 20180219
 
 //array of classes to be used for each card to be matched
-var classArray = ["fa-diamond", "fa-paper-plane-o", "fa-anchor", "fa-bolt", "fa-cube", "fa-leaf", "fa-bicycle", "fa-diamond", "fa-bomb", "fa-bomb", "fa-paper-plane-o", "fa-bolt", "fa-cube", "fa-anchor", "fa-leaf", "fa-bicycle"];
+var classArray = [
+'fa-diamond',
+'fa-paper-plane-o',
+'fa-anchor',
+'fa-bolt',
+'fa-cube',
+'fa-leaf',
+'fa-bicycle',
+'fa-diamond',
+'fa-bomb',
+'fa-bomb',
+'fa-paper-plane-o',
+'fa-bolt',
+'fa-cube',
+'fa-anchor',
+'fa-leaf',
+'fa-bicycle'
+ ];
 var firstCard, secondCard, matches=0, moves=0;
 
 // Shuffle function from http://stackoverflow.com/a/2450976
@@ -20,12 +37,7 @@ function shuffle(array) {
     return array;
 }
 
-/*
- * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
- *   - loop through each card and create its HTML
- *   - add each card's HTML to the page
- */
+//Initializes the grid with a random game baord
 function populateGrid() {
 
     //shuffle array so this game is unique
@@ -35,75 +47,90 @@ function populateGrid() {
     //take away old game cards
     gameBoard.empty();
 
+    //initialize the variables we use
     moves=0;
     matches=0;
     firstCard=undefined;
     secondCard=undefined;
 
+    //display all the new gamestate information
     $(".moves").text(moves);
-
-    classArray.forEach(function(element){
+    classArray.forEach(function(element) {
         gameBoard.append('<li class="card"><i class="fa ' + element + '"></i></li>');
-        console.log(element);
     });
 }
 
-$(".restart").click(function showAll(){
-	$(".moves").text("4444"); 
+//associate click of restart button to start a new game
+$(".restart").click(function showAll() {
     populateGrid();
 });
 
-function fadeAway(){
+//function called after a short delay if the player selected two cards that dfo not match
+//causes the cards to hide
+function fadeAway() {
     firstCard.removeClass("show open");
     secondCard.removeClass("show open");
     firstCard=undefined;
     secondCard=undefined;
 }
 
-$(".deck").click(function(e){
+//handles any click events within the gameboard area
+$(".deck").click(function(e) {
         var thisCard=$(e.target)
 
         //restrict actions to times I click the actual list item element
-        if(thisCard.is('li')){
+        if(thisCard.is('li')) {
+            
             if(thisCard.hasClass("match")) {
+                
                 //do nothing you already matched it!
+            
             }
             else if(firstCard===undefined) {//then this is the firstCard of two cards to be clicked         
+                
                 firstCard=thisCard;
                 firstCard.addClass("show open");
+           
             } else { //then firstCard already showing and clicked so check versus the secondCard
                 
-                if (thisCard.hasClass('show')){
+                if (thisCard.hasClass('show')) {
+                    
                     //then do nothing because this is already being shown!
-                }
-                else if(secondCard===undefined){//check for undefined incase someone clicks too fast!
+                
+                } else if(secondCard===undefined) {//check for undefined incase someone clicks too fast!
+                   
                     secondCard=thisCard; //remember the card
                     secondCard.addClass("show open");//show the card
-                    if($(secondCard.children()[0]).hasClass(firstCard.children()[0].className)){
-                        firstCard.addClass("match");
-                        secondCard.addClass("match");
-                        firstCard=undefined;
-                        secondCard=undefined;
-                        $(".moves").text(moves);
-                        matches++;
-                        (matches===8) ? alert("YOU WIN"):"";
-                    }
-                    else {
+                    
+                    if($(secondCard.children()[0]).hasClass(firstCard.children()[0].className)) {
+                        
+                    	matchedCards(); //handle winning scenario
+                    
+                    } else {
+                        
                         setTimeout(fadeAway, 500);
                         moves++;
                         $(".moves").text(moves);
                     }
-                }
-                else
-                {
+                
+                } else {
+                    
                     alert("Please wait for last move to fade away!");
                 }
             }
         }//end list item element type check
-        else{
-            //TODO: try and figure out how to call parent click event in the case the i tag is clicked and not the li element
-        }
 });
+
+//function to group the logic that occurs when a match occurs
+function matchedCards() {
+    firstCard.addClass("match");
+    secondCard.addClass("match");
+    firstCard=undefined;
+    secondCard=undefined;
+    $(".moves").text(moves);
+    matches++;
+    (matches===8) ? setTimeout(function(){alert("You won!")}, 500):"";
+}
 
 /*
  * set up the event listener for a card. If a card is clicked:
