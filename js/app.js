@@ -19,7 +19,7 @@ var classArray = [
 'fa-leaf',
 'fa-bicycle'
  ];
-var firstCard, secondCard, matches=0, moves=0;
+var firstCard, secondCard, matches=0, moves=0, elapsedTime=0, stars=3;
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 //will take in the classArray and shuffle it so each game is unique
@@ -37,6 +37,13 @@ function shuffle(array) {
     return array;
 }
 
+//add 1 second every second to our timer
+//it is worth noting this is slightly redundant to the moves update, but I do not want it to look un-responsive.
+setInterval(function(){
+    elapsedTime++;
+    $(".moves").text(buildMovesText());
+}, 1000);
+
 //Initializes the grid with a random game baord
 function populateGrid() {
 
@@ -47,14 +54,22 @@ function populateGrid() {
     //take away old game cards
     gameBoard.empty();
 
-    //initialize the variables we use
+    //initialize the variables we use\
+    stars=3;
     moves=0;
     matches=0;
+    elapsedTime=0;
     firstCard=undefined;
     secondCard=undefined;
+    $($($('.stars').children()[0]).children()[0]).addClass('fa-star');
+    $($($('.stars').children()[1]).children()[0]).addClass('fa-star');
+    $($($('.stars').children()[2]).children()[0]).addClass('fa-star');
+    $($($('.stars').children()[0]).children()[0]).removeClass('fa-star-o');
+    $($($('.stars').children()[1]).children()[0]).removeClass('fa-star-o');
+    $($($('.stars').children()[2]).children()[0]).removeClass('fa-star-o');
 
     //display all the new gamestate information
-    $(".moves").text(moves);
+    $(".moves").text(buildMovesText());
     classArray.forEach(function(element) {
         gameBoard.append('<li class="card"><i class="fa ' + element + '"></i></li>');
     });
@@ -82,11 +97,8 @@ $(".deck").click(function(e) {
         if(thisCard.is('li')) {
             
             if(thisCard.hasClass("match")) {
-                
-                //do nothing you already matched it!
-            
-            }
-            else if(firstCard===undefined) {//then this is the firstCard of two cards to be clicked         
+                //then do nothing you already matched it!
+            } else if(firstCard===undefined) {//then this is the firstCard of two cards to be clicked         
                 
                 firstCard=thisCard;
                 firstCard.addClass("show open");
@@ -94,23 +106,15 @@ $(".deck").click(function(e) {
             } else { //then firstCard already showing and clicked so check versus the secondCard
                 
                 if (thisCard.hasClass('show')) {
-                    
                     //then do nothing because this is already being shown!
-                
                 } else if(secondCard===undefined) {//check for undefined incase someone clicks too fast!
-                   
                     secondCard=thisCard; //remember the card
                     secondCard.addClass("show open");//show the card
                     
                     if($(secondCard.children()[0]).hasClass(firstCard.children()[0].className)) {
-                        
                     	matchedCards(); //handle winning scenario
-                    
                     } else {
-                        
-                        setTimeout(fadeAway, 500);
-                        moves++;
-                        $(".moves").text(moves);
+                        badPairChoice();
                     }
                 
                 } else {
@@ -121,16 +125,45 @@ $(".deck").click(function(e) {
         }//end list item element type check
 });
 
+function buildMovesText(){
+    return moves + ' Moves - ' + elapsedTime + ' Seconds';
+}
+
+//function to handle each time the user picks an un-matched pair
+function badPairChoice() {
+    setTimeout(fadeAway, 500);
+    moves++;
+    $(".moves").text(buildMovesText());
+
+    //change stars to correct symbol
+    if( moves == 9) {
+        $($($('.stars').children()[2]).children()[0]).removeClass('fa-star');
+        $($($('.stars').children()[2]).children()[0]).addClass('fa-star-o');
+        stars--;
+    } else if( moves == 5) {
+        $($($('.stars').children()[1]).children()[0]).removeClass('fa-star');
+        $($($('.stars').children()[1]).children()[0]).addClass('fa-star-o');
+        stars--;
+    } else if( moves == 1) { //Yes...this means you have to guess them all perfectly to get 3 stars
+        $($($('.stars').children()[0]).children()[0]).removeClass('fa-star');
+        $($($('.stars').children()[0]).children()[0]).addClass('fa-star-o');
+        stars--;
+    }
+}
+
+
 //function to group the logic that occurs when a match occurs
 function matchedCards() {
-    firstCard.addClass("match");
-    secondCard.addClass("match");
+    firstCard.addClass('match');
+    secondCard.addClass('match');
     firstCard=undefined;
     secondCard=undefined;
-    $(".moves").text(moves);
+    $('.moves').text(moves);
     matches++;
-    (matches===8) ? setTimeout(function(){alert("You won!")}, 500):"";
+    (matches===8) ? setTimeout(function(){alert('YOU WON.  You took ' + elapsedTime +' seconds and you got ' + stars + ' stars over ' + moves + ' moves!')}, 500):'';
 }
+
+populateGrid();
 
 /*
  * set up the event listener for a card. If a card is clicked:
