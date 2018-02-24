@@ -1,13 +1,18 @@
 # Memory Game Project By Jeff Choate
 
+This is a small Javascript game I created for a Udacity project in learning how to use Javascript.  The game randomly fills out a board of cards for you to flip over and try to find matches.  Be wary, a perfect 3 stars requires an immense amount of luck!
+
 ## Table of Contents
 
 * [Instructions](#instructions)
-* [Contributing](#contributing)
+* [Dependencies](#dependencies)
 
 ## Instructions
 
-This is my Udacity project for the Memory Game.  I did this by taking the starter code from Udacity.  I added 1-2 lines to the HTML file to allow for JQuery and a class on the ul element allowing me to find that element.  The bulk of my modifications were to the JavaScript file.
-## Contributing
+To play the game click the the blank cards and they will flip over revealing the symbol to be matched.  When you flip over two they will turn green if they match and if they do not match they will flip over after a short time and add to your move count.  
 
-I used the Udacity starter project and modified it.
+If you want to start over then you can click the restart button that looks like a round arrow.  
+
+## Dependencies
+
+This project uses Javascript, JQuery, and the Font-Awesome CSS font.
