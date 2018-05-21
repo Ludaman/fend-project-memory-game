@@ -20,7 +20,10 @@ var classArray = [
 'fa-bicycle'
  ];
 var firstCard, secondCard, matches=0, moves=0, elapsedTime=0, stars=3;
+  
 
+        
+      
 // Shuffle function from http://stackoverflow.com/a/2450976
 //will take in the classArray and shuffle it so each game is unique
 function shuffle(array) {
@@ -37,11 +40,15 @@ function shuffle(array) {
     return array;
 }
 
+var started =false;
+
 //add 1 second every second to our timer
 //it is worth noting this is slightly redundant to the moves update, but I do not want it to look un-responsive.
 setInterval(function(){
-    elapsedTime++;
-    $(".moves").text(buildMovesText());
+    if(started==true) {
+        elapsedTime++;
+        $(".moves").text(buildMovesText());
+    }
 }, 1000);
 
 //Initializes the grid with a random game baord
@@ -61,6 +68,7 @@ function populateGrid() {
     elapsedTime=0;
     firstCard=undefined;
     secondCard=undefined;
+    started=false;
     $($($('.stars').children()[0]).children()[0]).addClass('fa-star');
     $($($('.stars').children()[1]).children()[0]).addClass('fa-star');
     $($($('.stars').children()[2]).children()[0]).addClass('fa-star');
@@ -73,6 +81,8 @@ function populateGrid() {
     classArray.forEach(function(element) {
         gameBoard.append('<li class="card"><i class="fa ' + element + '"></i></li>');
     });
+    $( "#dialog-message" ).dialog({});
+    $("#dialog-message").dialog( "close" );
 }
 
 //associate click of restart button to start a new game
@@ -92,6 +102,8 @@ function fadeAway() {
 //handles any click events within the gameboard area
 $(".deck").click(function(e) {
         var thisCard=$(e.target)
+
+        started=true;
 
         //restrict actions to times I click the actual list item element
         if(thisCard.is('li')) {
@@ -137,10 +149,6 @@ function badPairChoice() {
 
     //change stars to correct symbol
     if( moves == 9) {
-        $($($('.stars').children()[2]).children()[0]).removeClass('fa-star');
-        $($($('.stars').children()[2]).children()[0]).addClass('fa-star-o');
-        stars--;
-    } else if( moves == 5) {
         $($($('.stars').children()[1]).children()[0]).removeClass('fa-star');
         $($($('.stars').children()[1]).children()[0]).addClass('fa-star-o');
         stars--;
@@ -160,7 +168,22 @@ function matchedCards() {
     secondCard=undefined;
     $('.moves').text(moves);
     matches++;
-    (matches===8) ? setTimeout(function(){alert('YOU WON.  You took ' + elapsedTime +' seconds and you got ' + stars + ' stars over ' + moves + ' moves!')}, 500):'';
+    (matches===8) ? setTimeout(displayWinDialog(), 500):'';
+    //(matches===8) ? setTimeout(function(){confirm('YOU WON.  You took ' + elapsedTime +' seconds and you got ' + stars + ' stars over ' + moves + ' moves!')}, 500):'';
+}
+
+function displayWinDialog() {
+
+    $("#winText").text('YOU WON.  You took ' + elapsedTime +' seconds and you got ' + stars + ' stars over ' + moves + ' moves!');
+    $( "#dialog-message" ).dialog({
+            modal: true,
+            buttons: {
+                Restart: function() {
+                    $( this ).dialog( "close" );
+                    populateGrid();
+                }
+            }
+        });
 }
 
 populateGrid();
